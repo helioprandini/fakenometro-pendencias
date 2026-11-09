@@ -1,0 +1,1 @@
+{ "name": "fakenometro", "owner": { "name": "Fakenômetro" }, "plugins": [ { "name": "pendencias", "source": "./pendencias", "description": "Quadros de pendências do cockpit na lateral do Claude" } ] }
