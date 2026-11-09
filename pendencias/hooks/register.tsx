@@ -29,8 +29,10 @@ let chave = ''
 let quadroPadrao = 'EDITORIAL INSTAGRAM'
 const cabecalho = () => ({ 'X-Chave': chave, 'ngrok-skip-browser-warning': '1' })
 
+// A chave vem das opções do plugin ou do campo do próprio painel (guardada no $.store deste computador).
 async function carregar($: any) {
-  if (!chave) return update($, erro, () => 'Falta a chave do cockpit nas opções do plugin.')
+  if (!chave) chave = String((await $.store.get('chave')) ?? '')
+  if (!chave) return update($, erro, () => 'falta-chave')
   const r = await $.http.fetch(API, { headers: cabecalho() }).catch(() => null)
   if (!r?.ok) return update($, erro, () => `Não consegui ler as pendências (${r?.status ?? 'sem rede'}).`)
   const novos = abertas(JSON.parse(r.text))
@@ -65,7 +67,7 @@ export const register: Register = (on, options) => {
     await $.ui.open({ id: PANE, title: TITULO })
     const falha = await read($, erro)
 
-    return { text: falha || listar(await read($, quadros)) }
+    return { text: falha === 'falta-chave' ? 'Cole a chave do cockpit no campo do painel Pendências.' : falha || listar(await read($, quadros)) }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
@@ -75,8 +77,22 @@ export const register: Register = (on, options) => {
 
     return (
       <Box flexDirection="column" gap={1}>
-        {falha && <Text>{falha}</Text>}
-        {Input && (
+        {falha === 'falta-chave' && Input && (
+          <Input
+            key="chave"
+            placeholder="Cole aqui a chave do cockpit (o código depois de #k=)"
+            submitLabel="salvar"
+            onSubmit={async (valor: string) => {
+              const k = valor.trim().replace(/^.*#k=/, '')
+              if (!k) return
+              await $.store.set('chave', k)
+              chave = k
+              await carregar($)
+            }}
+          />
+        )}
+        {falha && falha !== 'falta-chave' && <Text>{falha}</Text>}
+        {!falha && Input && (
           <Input
             key="nova"
             placeholder={`Nova pendência (${quadroPadrao})`}

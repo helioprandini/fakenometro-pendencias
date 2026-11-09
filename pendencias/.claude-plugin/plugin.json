@@ -1,10 +1,10 @@
 {
   "name": "pendencias",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Quadros de pendências do cockpit na lateral, lidos do servidor",
   "types": "./types/index.d.ts",
   "userConfig": {
-    "chave": { "type": "string", "title": "Chave do cockpit", "description": "A mesma chave do link do cockpit (depois de #k=)", "sensitive": true, "required": true },
+    "chave": { "type": "string", "title": "Chave do cockpit", "description": "A mesma chave do link do cockpit (depois de #k=)", "sensitive": true, "required": false },
     "quadro": { "type": "string", "title": "Quadro das pendências novas", "description": "Para onde vai a pendência escrita no painel", "default": "EDITORIAL INSTAGRAM" }
   }
 }
